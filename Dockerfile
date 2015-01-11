@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-MAINTAINER maran.hidskes@gmail.com
+MAINTAINER Rob Nelson <guruvan@maza.club>
 
 RUN apt-get update -y
 RUN apt-get upgrade -y
