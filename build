@@ -1,6 +1,6 @@
 #!/bin/bash -l
 function buildBinary(){
-  $DOCKERBIN run --rm -it --privileged -v $(pwd)/source:/opt/wine-electrum/drive_c/electrum/ guruvan/tate-winbuild /usr/bin/build-binary $VERSION
+  $DOCKERBIN run --rm -it --privileged -v $(pwd)/source:/opt/wine-electrum/drive_c/tate/ guruvan/tate-winbuild /usr/bin/build-binary $VERSION
   if [[ $? = 0 ]]; then
     echo "Build successful."
   else

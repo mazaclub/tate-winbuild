@@ -23,7 +23,7 @@ ENV NSIS_URL http://prdownloads.sourceforge.net/nsis/nsis-2.46-setup.exe?downloa
 ENV WINEPREFIX /opt/wine-electrum
 RUN export WINEPREFIX=/opt/wine-electrum
 
-ENV ELECTRUM_PATH $WINE_PREFIX/drive_c/electrum
+ENV ELECTRUM_PATH $WINE_PREFIX/drive_c/tate
 ENV PYHOME c:/Python27
 ENV PYTHON xvfb-run -a wine $PYHOME/python.exe -B
 ENV PIP $PYTHON -m pip
@@ -53,7 +53,7 @@ RUN $PYTHON $PYHOME/Scripts/pywin32_postinstall.py -install
 RUN wget -O PyQt.exe "$PYQT4_URL"
 RUN rm -rf /tmp/.wine-* && xvfb-run -a wine PyQt.exe /S
 
-VOLUME ["/opt/wine-electrum/drive_c/electrum"]
+VOLUME ["/opt/wine-electrum/drive_c/tate"]
 
 RUN wget -q -O nsis.exe $NSIS_URL
 RUN rm -rf /tmp/.wine-* && xvfb-run -a wine nsis.exe /S

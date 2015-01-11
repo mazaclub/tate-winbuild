@@ -14,14 +14,14 @@ function cleanup(){
 
 cleanup
 
-SOURCEDIR=/opt/wine-electrum/drive_c/electrum/tate-$VERSION
+SOURCEDIR=/opt/wine-electrum/drive_c/tate/tate-$VERSION
 
 cd $SOURCEDIR
 
-$PYTHON "C:/PyInstaller/pyinstaller.py" -y "C:/electrum/deterministic.spec"
-cp /opt/wine-electrum/drive_c/electrum/tate.nsi $SOURCEDIR/
+$PYTHON "C:/PyInstaller/pyinstaller.py" -y "C:/tate/deterministic.spec"
+cp /opt/wine-electrum/drive_c/tate/tate.nsi $SOURCEDIR/
 
-echo "Running c:/electrum/tate-$VERSION/tate.nsi for install"
-xvfb-run wine c:\\"Program Files (x86)"\\NSIS\\makensis.exe -V1 c:/electrum/tate-$VERSION/tate.nsi
+echo "Running c:/tate/tate-$VERSION/tate.nsi for install"
+xvfb-run wine c:\\"Program Files (x86)"\\NSIS\\makensis.exe -V1 c:/tate/tate-$VERSION/tate.nsi
 
 cleanup

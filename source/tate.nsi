@@ -8,7 +8,7 @@
 
   ;Name and file
   Name "Tate"
-  OutFile "c:/electrum/tate-setup.exe"
+  OutFile "c:/tate/tate-setup.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\Tate"
@@ -99,6 +99,6 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\Tate\*.*"
   RmDir  "$SMPROGRAMS\Tate"
 
-  DeleteRegKey /ifempty HKCU "Software\Electrum"
+  DeleteRegKey /ifempty HKCU "Software\Tate"
 
 SectionEnd
