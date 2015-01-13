@@ -1,3 +1,6 @@
 releases/*
 source/*.tar.gz
 source/tate-*
+source/Tate-*
+.present
+

@@ -1,16 +1,17 @@
 FROM ubuntu:14.04
 MAINTAINER Rob Nelson <guruvan@maza.club>
 
-RUN apt-get update -y
-RUN apt-get upgrade -y
-RUN apt-get install -y software-properties-common && add-apt-repository -y ppa:ubuntu-wine/ppa
-RUN dpkg --add-architecture i386
-RUN apt-get update -y
-RUN apt-get install -y wine1.7 xvfb wget
-RUN apt-get install -y winbind
+VOLUME ["/opt/wine-electrum/drive_c/tate"]
 
-RUN apt-get purge -y python-software-properties
-RUN apt-get autoclean -y
+RUN apt-get update -y \
+     && apt-get upgrade -y \
+     && apt-get install -y software-properties-common && add-apt-repository -y ppa:ubuntu-wine/ppa \
+     && dpkg --add-architecture i386 \
+     && apt-get update -y \
+     && apt-get install -y wine1.7 xvfb wget \
+     && apt-get install -y winbind \
+     && apt-get purge -y python-software-properties \
+     && apt-get autoclean -y 
 
 # Versions
 ENV PYTHON_URL https://www.python.org/ftp/python/2.7.8/python-2.7.8.msi
@@ -35,33 +36,26 @@ ENV PIP $PYTHON -m pip
 # EXPOSE 5933
 
 # Docker kills this run before wine is done setting up, don't remove the sleep
-RUN xvfb-run -a --server-num=4 wineboot && sleep 5
-
-# Install stuff
-RUN wget -O python.msi "$PYTHON_URL"
-RUN xvfb-run -a -e /dev/stdout -a msiexec /q /i python.msi && sleep 5
-
-RUN wget -O pyinstaller.zip "$PYINSTALLER_URL" && unzip pyinstaller.zip && mv PyInstaller-2.1 $WINEPREFIX/drive_c/pyinstaller
-
-RUN wget -O pywin32.exe "$PYWIN32_URL"
-RUN unzip -qq pywin32.exe; echo 'Done pywin'
-RUN cp -r PLATLIB/* $WINEPREFIX/drive_c/Python27/Lib/site-packages/
-RUN mkdir -p $WINEPREFIX/drive_c/Python27/Scripts/
-RUN cp -r SCRIPTS/* $WINEPREFIX/drive_c/Python27/Scripts/
-RUN $PYTHON $PYHOME/Scripts/pywin32_postinstall.py -install
-
-RUN wget -O PyQt.exe "$PYQT4_URL"
-RUN rm -rf /tmp/.wine-* && xvfb-run -a wine PyQt.exe /S
-
-VOLUME ["/opt/wine-electrum/drive_c/tate"]
-
-RUN wget -q -O nsis.exe $NSIS_URL
-RUN rm -rf /tmp/.wine-* && xvfb-run -a wine nsis.exe /S
+RUN xvfb-run -a --server-num=4 wineboot && sleep 5 \
+     && wget -O python.msi "$PYTHON_URL" \
+     && xvfb-run -a -e /dev/stdout -a msiexec /q /i python.msi \
+     && sleep 5 \
+     && wget -O pyinstaller.zip "$PYINSTALLER_URL" && unzip pyinstaller.zip && mv PyInstaller-2.1 $WINEPREFIX/drive_c/pyinstaller \
+     && wget -O pywin32.exe "$PYWIN32_URL" \
+     && unzip -qq pywin32.exe; echo 'Done pywin' \
+     && cp -r PLATLIB/* $WINEPREFIX/drive_c/Python27/Lib/site-packages/ \
+     && mkdir -p $WINEPREFIX/drive_c/Python27/Scripts/ \
+     && cp -r SCRIPTS/* $WINEPREFIX/drive_c/Python27/Scripts/ \
+     && $PYTHON $PYHOME/Scripts/pywin32_postinstall.py -install \
+     && wget -O PyQt.exe "$PYQT4_URL" \
+     && rm -rf /tmp/.wine-* && xvfb-run -a wine PyQt.exe /S \
+     && wget -q -O nsis.exe $NSIS_URL \
+     && rm -rf /tmp/.wine-* && xvfb-run -a wine nsis.exe /S
 
 # Pip not needed for releases
 #RUN wget -q -O - https://raw.github.com/pypa/pip/master/contrib/get-pip.py | $PYTHON
 
-ADD ./helpers/build-binary /usr/bin/build-binary
+COPY ./helpers/build-binary /usr/bin/build-binary
 
 # Clean up stale wine processes
 RUN rm -rf /tmp/.wine-*

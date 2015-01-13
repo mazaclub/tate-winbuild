@@ -1,6 +1,6 @@
 #!/bin/bash -l
 function buildBinary(){
-  $DOCKERBIN run --rm -it --privileged -v $(pwd)/source:/opt/wine-electrum/drive_c/tate/ guruvan/tate-winbuild /usr/bin/build-binary $VERSION
+  $DOCKERBIN run --rm -it --privileged -v $(pwd)/source:/opt/wine-electrum/drive_c/tate/ mazaclub/tate-winbuild /usr/bin/build-binary $VERSION
   if [[ $? = 0 ]]; then
     echo "Build successful."
   else
@@ -9,13 +9,13 @@ function buildBinary(){
   fi
   cp $TARGETFOLDER/dist/tate.exe $(pwd)/releases/tate-$VERSION.exe
   cp $(pwd)/source/tate-setup.exe $(pwd)/releases/tate-$VERSION-setup.exe
-  echo "You can find your tate $VERSION binaries in the releases folder."
+  echo "You can find your Tate $VERSION binaries in the releases folder."
 
 }
 
 function buildImage(){
   echo "Building image"
-  $DOCKERBIN build -t guruvan/tate-winbuild .
+  $DOCKERBIN build -t mazaclub/tate-winbuild .
 }
 
 function prepareFile(){
@@ -23,21 +23,22 @@ function prepareFile(){
   if [ -e "$TARGETPATH" ]; then
     echo "Version tar already downloaded."
   else
-    wget https://s3-us-west-2.amazonaws.com/mazaclub-public-configs/$FILENAME -O $TARGETPATH
+    wget https://github.com/mazaclub/tate/releases/download/v${VERSION}/${FILENAME} -O $TARGETPATH
   fi
 
   if [ -d "$TARGETFOLDER" ]; then
     echo "Version is already extracted"
   else
-    tar -xvf $TARGETPATH -C $(pwd)/source
+     unzip -d $(pwd)/source ${TARGETPATH} 
+   # tar -xvf $TARGETPATH -C $(pwd)/source
   fi
 }
 
 if [[ $# -gt 0 ]]; then
   VERSION=$1
-  FILENAME=Tate-$VERSION.tar.gz
+  FILENAME=Tate-$VERSION.zip
   TARGETPATH=$(pwd)/source/$FILENAME
-  TARGETFOLDER=$(pwd)/source/tate-$VERSION
+  TARGETFOLDER=$(pwd)/source/Tate-$VERSION
   echo "Building Tate $VERSION from $FILENAME"
 else
   echo "Usage: ./build <version>."
