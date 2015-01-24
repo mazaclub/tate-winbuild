@@ -23,7 +23,7 @@ function prepareFile(){
   if [ -e "$TARGETPATH" ]; then
     echo "Version tar already downloaded."
   else
-    wget https://github.com/mazaclub/tate/releases/download/v${VERSION}/${FILENAME} -O $TARGETPATH
+   echo "we would do:  wget https://github.com/mazaclub/tate/releases/download/v${VERSION}/${FILENAME} -O $TARGETPATH"
   fi
 
   if [ -d "$TARGETFOLDER" ]; then

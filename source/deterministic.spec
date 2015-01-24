@@ -40,6 +40,16 @@ a.datas += extra_datas('gui')
 a.datas += extra_datas('lib')
 a.datas += extra_datas('plugins')
 
+# Dependencies
+a.datas += extra_datas('packages')
+a.datas += extra_datas('aes')
+a.datas += extra_datas('ecdsa')
+a.datas += extra_datas('pyasn1')
+a.datas += extra_datas('pyasn1_modules')
+a.datas += extra_datas('qrcode')
+a.datas += extra_datas('requests')
+a.datas += extra_datas('tlslite')
+
 pyz = PYZ(a.pure)
 exe = EXE(pyz,
           a.scripts,

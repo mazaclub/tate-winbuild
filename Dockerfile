@@ -8,7 +8,7 @@ RUN apt-get update -y \
      && apt-get install -y software-properties-common && add-apt-repository -y ppa:ubuntu-wine/ppa \
      && dpkg --add-architecture i386 \
      && apt-get update -y \
-     && apt-get install -y wine1.7 xvfb wget \
+     && apt-get install -y curl  wine1.7 xvfb wget \
      && apt-get install -y winbind \
      && apt-get purge -y python-software-properties \
      && apt-get autoclean -y 
@@ -34,6 +34,7 @@ ENV PIP $PYTHON -m pip
 # RUN export DISPLAY=:33
 # RUN (echo electrum;echo electrum)|vnc4passwd
 # EXPOSE 5933
+
 
 # Docker kills this run before wine is done setting up, don't remove the sleep
 RUN xvfb-run -a --server-num=4 wineboot && sleep 5 \
