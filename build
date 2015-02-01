@@ -1,14 +1,24 @@
 #!/bin/bash -l
 function buildBinary(){
-  $DOCKERBIN run --rm -it --privileged -v $(pwd)/source:/opt/wine-electrum/drive_c/tate/ mazaclub/tate-winbuild /usr/bin/build-binary $VERSION
+  $DOCKERBIN run --rm -it --privileged -e MKPKG_VER=${VERSION} -v $(pwd)/repo:/root/repo  -v $(pwd)/source:/opt/wine-electrum/drive_c/tate/ mazaclub/tate-winbuild /root/make_release $VERSION
   if [[ $? = 0 ]]; then
     echo "Build successful."
   else
     echo "Seems like the build failed. Exiting."
     exit
   fi
-  cp $TARGETFOLDER/dist/tate.exe $(pwd)/releases/tate-$VERSION.exe
-  cp $(pwd)/source/tate-setup.exe $(pwd)/releases/tate-$VERSION-setup.exe
+  cp $TARGETFOLDER/dist/tate.exe $(pwd)/releases/Tate-$VERSION.exe
+  cp $(pwd)/source/tate-setup.exe $(pwd)/releases/Tate-$VERSION-setup.exe
+  cp $(pwd)/repo/dist/* $(pwd)/releases/
+  cd releases
+  for release in * 
+  do
+    sha1sum ${release} > ${release}.sha1
+    md5sum ${release} > ${release}.md5
+    gpg --sign --armor --detach  ${release}
+    gpg --sign --armor --detach  ${release}.md5
+    gpg --sign --armor --detach  ${release}.sha1
+  done
   echo "You can find your Tate $VERSION binaries in the releases folder."
 
 }
@@ -24,6 +34,7 @@ function prepareFile(){
     echo "Version tar already downloaded."
   else
    echo "we would do:  wget https://github.com/mazaclub/tate/releases/download/v${VERSION}/${FILENAME} -O $TARGETPATH"
+   wget https://github.com/mazaclub/tate/archive/v${VERSION}.zip -O $TARGETPATH
   fi
 
   if [ -d "$TARGETFOLDER" ]; then

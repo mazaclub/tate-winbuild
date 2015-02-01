@@ -3,4 +3,5 @@ source/*.tar.gz
 source/tate-*
 source/Tate-*
 .present
-
+repo
+repo/*
