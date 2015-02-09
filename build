@@ -1,5 +1,7 @@
 #!/bin/bash -l
+
 function buildBinary(){
+  mkdir $(pwd)/releases
   $DOCKERBIN run --rm -it --privileged -e MKPKG_VER=${VERSION} -v $(pwd)/repo:/root/repo  -v $(pwd)/source:/opt/wine-electrum/drive_c/tate/ mazaclub/tate-winbuild /root/make_release $VERSION
   if [[ $? = 0 ]]; then
     echo "Build successful."
@@ -7,18 +9,21 @@ function buildBinary(){
     echo "Seems like the build failed. Exiting."
     exit
   fi
+  mkdir -pv $(pwd)/releases 
   cp $TARGETFOLDER/dist/tate.exe $(pwd)/releases/Tate-$VERSION.exe
   cp $(pwd)/source/tate-setup.exe $(pwd)/releases/Tate-$VERSION-setup.exe
   cp $(pwd)/repo/dist/* $(pwd)/releases/
-  cd releases
-  for release in * 
-  do
-    sha1sum ${release} > ${release}.sha1
-    md5sum ${release} > ${release}.md5
-    gpg --sign --armor --detach  ${release}
-    gpg --sign --armor --detach  ${release}.md5
-    gpg --sign --armor --detach  ${release}.sha1
-  done
+  if [ "${TYPE}" = "SIGNED" ] ; then
+    cd releases
+    for release in * 
+    do
+      sha1sum ${release} > ${release}.sha1
+      md5sum ${release} > ${release}.md5
+      gpg --sign --armor --detach  ${release}
+      gpg --sign --armor --detach  ${release}.md5
+      gpg --sign --armor --detach  ${release}.sha1
+    done
+  fi
   echo "You can find your Tate $VERSION binaries in the releases folder."
 
 }
@@ -27,13 +32,23 @@ function buildImage(){
   echo "Building image"
   $DOCKERBIN build -t mazaclub/tate-winbuild .
 }
+function buildLtcScrypt() {
+## this will be integrated into the main build in a later release
+   wget https://pypi.python.org/packages/source/l/ltc_scrypt/ltc_scrypt-1.0.tar.gz
+   tar -xpzvf ltc_scrypt-1.0.tar.gz 
+   docker run -t -i \
+    -e WINEPREFIX="/wine/wine-py2.7.8-32" \
+    -v $(pwd)/ltc_scrypt-1.0:/code \
+    -v $(pwd)/helpers:/helpers \
+    ogrisel/python-winbuilder wineconsole --backend=curses  Z:\\helpers\\ltc_scrypt-build.bat
+   cp ltc_scrypt-1.0/build/lib.win32-2.7/ltc_scrypt.pyd helpers/ltc_scrypt.pyd
+}
 
 function prepareFile(){
   echo "Preparing file for Tate version $VERSION"
   if [ -e "$TARGETPATH" ]; then
     echo "Version tar already downloaded."
   else
-   echo "we would do:  wget https://github.com/mazaclub/tate/releases/download/v${VERSION}/${FILENAME} -O $TARGETPATH"
    wget https://github.com/mazaclub/tate/archive/v${VERSION}.zip -O $TARGETPATH
   fi
 
@@ -47,6 +62,7 @@ function prepareFile(){
 
 if [[ $# -gt 0 ]]; then
   VERSION=$1
+  TYPE=$2
   FILENAME=Tate-$VERSION.zip
   TARGETPATH=$(pwd)/source/$FILENAME
   TARGETFOLDER=$(pwd)/source/Tate-$VERSION
@@ -74,11 +90,12 @@ else
         echo "Using docker at $DOCKERBIN"
 fi
 
+buildLtcScrypt
 # Build docker image
 buildImage
 
 # Prepare host file system
-prepareFile
+#prepareFile
 
 # Build files
 buildBinary

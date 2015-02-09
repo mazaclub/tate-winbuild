@@ -2,16 +2,6 @@ FROM ubuntu:14.04
 MAINTAINER Rob Nelson <guruvan@maza.club>
 
 VOLUME ["/opt/wine-electrum/drive_c/tate"]
-#########################
-###
-## git tate [release tag]
-## apt-get install anything than make_packages wants installed to "the host" (the docker container)
-## pip install anything that the later build or make_packages wants instaleld to "the host"
-## cd tate 
-## make_packages
-## cp package.zip  to source/pacakage.zip
-## continue as below
-##
 
 RUN apt-get update -y \
      && apt-get upgrade -y \
@@ -73,39 +63,11 @@ RUN xvfb-run -a --server-num=4 wineboot && sleep 5 \
      && wget -q -O nsis.exe $NSIS_URL \
      && rm -rf /tmp/.wine-* && xvfb-run -a wine nsis.exe /S
 
-# Pip not needed for releases
-#RUN wget -q -O - https://raw.github.com/pypa/pip/master/contrib/get-pip.py | $PYTHON
 
+COPY ./helpers/ltc_scrypt.pyd /root/ltc_scrypt.pyd
 COPY ./helpers/make_packages /root/make_packages
 COPY ./helpers/make_release /root/make_release
 COPY ./helpers/build-binary /usr/bin/build-binary
 
 # Clean up stale wine processes
 RUN rm -rf /tmp/.wine-*
-## Make package
-#RUN mkdir -p $ELECTRUM_PATH \
-#     && echo 'WINEPREFIX -------------' && ls $WINEPREFIX/drive_c/tate \
-#     && echo '--------' \
-##     && echo 'electrum path ls' 
-##     && $ELECTRUM_PATH/make_packages
-#     && pyrcc4 $ELECTRUM_PATH/icons.qrc -o $ELECTRUM_PATH/gui/qt/icons_rc.py \
-#     && pip install --no-compile -t $ELECTRUM_PATH ecdsa \
-#     && pip install --no-compile -t $ELECTRUM_PATH pyasn1 \
-#     && pip install --no-compile -t $ELECTRUM_PATH pyasn1_modules \
-#     && pip install --no-compile -t $ELECTRUM_PATH qrcode \
-#     && pip install --no-compile -t $ELECTRUM_PATH requests \
-#     && pip install --no-compile -t $ELECTRUM_PATH tlslite \
-#     && pip install --pre --no-compile -t $ELECTRUM_PATH/lib slowaes \
-#     && pip install --no-compile -t $ELECTRUM_PATH/lib pbkdf2 \
-#     && pip install --no-compile -t $ELECTRUM_PATH/lib SocksiPy-branch
-
-
-#     && git clone https://github.com/mazaclub/tate.git \
-#     && cd tate && git checkout $MKPKG_VER && cd ..
-
-
-#RUN echo 'making packages'  && cd tate \
-#     && mkdir packages && ./make_packages && cd .. \
-#     && cp tate/dist/Tate-$MKPKG_VER.zip /opt/wine-electrum/drive_c/tate \
-#     && unzip /opt/wine-electrum/drive_c/tate
-

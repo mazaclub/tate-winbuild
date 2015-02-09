@@ -1,0 +1,5 @@
+rm -rf releases/*
+rm -rf source/*-*
+rm -rf repo
+rm -rf ltc_scrypt*
+

@@ -18,5 +18,6 @@ rm -rf /opt/wine-electrum/drive_c/tate/tate-$VERSION/
 cp -v /root/repo/dist/Tate-$VERSION.zip /opt/wine-electrum/drive_c/tate
 cd /opt/wine-electrum/drive_c/tate
 unzip Tate-$VERSION.zip
+cp -a /root/ltc_scrypt.pyd /opt/wine-electrum/drive_c/tate/Tate-$VERSION/lib/chains
 
 /usr/bin/build-binary $VERSION
